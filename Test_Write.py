@@ -17,9 +17,7 @@ password = "qwer"
 
 data = []
 
-if os.path.isfile("Jsonfile.json"):
-    with open('Jsonfile.json', 'r', encoding='utf-8' ) as data_file:
-        data = json.loads(data_file.read())
+
 
 data.append( {"What": "Second Entry", "Username": "TTTT", "Password": "jfhghjtj" } )
 
