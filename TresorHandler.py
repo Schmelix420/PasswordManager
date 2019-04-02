@@ -11,14 +11,14 @@ from cryptography.fernet import Fernet
 
 class TresorHandler:
     def __init__(self):
-        #Get the contant of the tresor file
+        # Get the contant of the tresor file
         if os.path.isfile("TresorFile.json"):
             with open('TresorFile.json', 'r', encoding='utf-8') as data_file:
                 self.__TresorData = json.loads(data_file.read())
         else:
             self.__TresorData = list()
 
-        #Get the Salt value. If there is no salt file, create a salt value and the salt file
+        # Get the Salt value. If there is no salt file, create a salt value and the salt file
         if os.path.isfile("Salt.txt"):
             with open('Salt.txt', "r+b") as salthandle:
                 self.__salt = salthandle.read()
@@ -66,6 +66,7 @@ class TresorHandler:
         with open('TresorFile.json', 'w', encoding='utf-8') as data_file:
             data_file.write(json.dumps(self.__TresorData))
 
+        print("Added " +  site_to_add + " to the list")
 
     def delete(self, site_to_delete, masterpassword):
         f = self.__createFernet(masterpassword)
@@ -115,8 +116,8 @@ class TresorHandler:
                 return
 
             if site_to_get_from == decrypted_site.decode():
-                password = f.decrypt(dic["Username"].encode())
-                return password.decode()
+                username = f.decrypt(dic["Username"].encode())
+                return username.decode()
 
         print("Site " + site_to_get_from + " is not on the list.")
 
