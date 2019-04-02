@@ -8,7 +8,9 @@ This program creates and manage a password safe. The safe is a file with a list 
 The entrys are encrypted with cryptographys Fernet. See https://cryptography.io/en/latest/fernet/ for more details.
 For each operation you need to enter the masterpassword.
 
-Methos:
+When you first start the program it will create a "TresorFile" and an "SaltFile". The "TresorFile" is the password safe and the "SaltFile" is the salt. You need both files to get data from the password safe.
+
+Methods:
 add:
 Adds a new entry to the safe file. Usage: ./PW_Manager add reddit JohNCena69 qwertz
 
