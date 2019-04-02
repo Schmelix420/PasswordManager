@@ -14,50 +14,111 @@ class TresorHandler:
         #Get the contant of the tresor file
         if os.path.isfile("TresorFile.json"):
             with open('TresorFile.json', 'r', encoding='utf-8') as data_file:
-                self.TresorData = json.loads(data_file.read())
+                self.__TresorData = json.loads(data_file.read())
         else:
-            self.TresorData = list()
+            self.__TresorData = list()
 
-        #Get the Salt value. If there is no salt file, create a salt value and create the salt file
+        #Get the Salt value. If there is no salt file, create a salt value and the salt file
         if os.path.isfile("Salt.txt"):
             with open('Salt.txt', "r+b") as salthandle:
-                self.salt = salthandle.read()
+                self.__salt = salthandle.read()
         else:
-            self.salt = os.urandom(16)
+            self.__salt = os.urandom(16)
             with open('Salt.txt', "w+b") as salthandle:
-                salthandle.write(self.salt)
+                salthandle.write(self.__salt)
 
-
-    def add(self, site_to_add, user_to_add, password_to_add, masterpassword):
+    def __createFernet(self, masterpassword):
         password = masterpassword.encode()
 
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
-            salt=self.salt,
+            salt=self.__salt,
             iterations=100000,
             backend=default_backend()
         )
         key = base64.urlsafe_b64encode(kdf.derive(password))  # Can only use kdf once
 
-        f = Fernet(key)
+        return Fernet(key)
+
+    def add(self, site_to_add, user_to_add, password_to_add, masterpassword):
+        f = self.__createFernet(masterpassword)
+
+        for dic in self.__TresorData:
+            try:
+                decrypted_site = f.decrypt(dic["What"].encode())
+            except:
+                print("Wrong masterpassword.")
+                return
+
+            if site_to_add == decrypted_site.decode():
+                print("The site " + site_to_add + " already exists. If you want to change it,"
+                                                  " you have to delete it first.")
+                return
+
         encrypted_site = f.encrypt(site_to_add.encode())
         encrypted_user = f.encrypt(user_to_add.encode())
         encrypted_pw = f.encrypt(password_to_add.encode())
 
-        for i in self.TresorData:
-            if str(encrypted_site) in i.values():
-                print("The site " + site_to_add + " already exists. If you want to change it,"
-                                                      " you have to delete it first.")
-                return
-
-
-        self.TresorData.append({"What": str(encrypted_site), "Username": str(encrypted_user),
-                                         "Password": str(encrypted_pw)})
+        self.__TresorData.append({"What": encrypted_site.decode(), "Username": encrypted_user.decode(),
+                                         "Password": encrypted_pw.decode()})
 
         with open('TresorFile.json', 'w', encoding='utf-8') as data_file:
-            data_file.write(json.dumps(self.TresorData))
+            data_file.write(json.dumps(self.__TresorData))
 
+
+    def delete(self, site_to_delete, masterpassword):
+        f = self.__createFernet(masterpassword)
+
+        for i in range(len(self.__TresorData)):
+            try:
+                decrypted_site = f.decrypt(self.__TresorData[i]["What"].encode())
+            except:
+                print("Wrong masterpassword.")
+                return
+
+            if site_to_delete == decrypted_site.decode():
+                del(self.__TresorData[i])
+
+                with open('TresorFile.json', 'w', encoding='utf-8') as data_file:
+                    data_file.write(json.dumps(self.__TresorData))
+
+                print("Deleted: " + site_to_delete)
+                return
+
+        print("Site " + site_to_delete + " is not on the list.")
+
+    def get_password(self, site_to_get_from, masterpassword):
+        f = self.__createFernet(masterpassword)
+
+        for dic in self.__TresorData:
+            try:
+                decrypted_site = f.decrypt(dic["What"].encode())
+            except:
+                print("Wrong masterpassword.")
+                return
+
+            if site_to_get_from == decrypted_site.decode():
+                password = f.decrypt(dic["Password"].encode())
+                return password.decode()
+
+        print("Site " + site_to_get_from + " is not on the list.")
+
+    def get_user(self, site_to_get_from, masterpassword):
+        f = self.__createFernet(masterpassword)
+
+        for dic in self.__TresorData:
+            try:
+                decrypted_site = f.decrypt(dic["What"].encode())
+            except:
+                print("Wrong masterpassword.")
+                return
+
+            if site_to_get_from == decrypted_site.decode():
+                password = f.decrypt(dic["Username"].encode())
+                return password.decode()
+
+        print("Site " + site_to_get_from + " is not on the list.")
 
 
 
