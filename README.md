@@ -24,4 +24,5 @@ get username:
 Copies the username of the "What" to the clipboard, Usage; ./PW_Manager get username reddit
 
 
-
+Errors:
+If you are 100% sure that the masterpassword you entered is correct check if the Salt file was changes recently. If yes you have a problem. Next time make a backup from it.
