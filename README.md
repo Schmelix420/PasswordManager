@@ -12,7 +12,7 @@ When you first start the program it will create a "TresorFile" and an "SaltFile"
 
 Methods:
 add:
-Adds a new entry to the safe file. Usage: ./PW_Manager add reddit JohNCena69 qwertz
+Adds a new entry to the safe file. Usage: ./PW_Manager add reddit JohNCena69 'qwertz'  Note: You have to add '' around the password so the linux command line includes specail caracters in the string
 
 delete:
 Deletes an entry from the safe file. Usage: ./PW_Manager delete reddit
