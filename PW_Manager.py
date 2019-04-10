@@ -3,6 +3,7 @@ import sys
 import getpass
 import pyperclip
 import TresorHandler
+from codecs import decode
 
 
 if len(sys.argv) < 2:
@@ -20,7 +21,7 @@ if sys.argv[1] == "add":
         masterpassword = getpass.getpass("enter Key :")
         TH.add(sys.argv[2], sys.argv[3], sys.argv[4], masterpassword)
 elif sys.argv[1] == "delete":
-    if len(sys.argv < 3):
+    if len(sys.argv) < 3:
         print("To few arguments. \n"
               "Example: ./PW_Manager.py delete reddit - Deletes reddit from the list.")
     else:
