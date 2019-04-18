@@ -113,7 +113,7 @@ class TresorHandler:
                 decrypted_site = f.decrypt(dic["What"].encode())
             except:
                 print("Wrong masterpassword.")
-                return
+                return "Error"
 
             if site_to_get_from == decrypted_site.decode():
                 username = f.decrypt(dic["Username"].encode())
